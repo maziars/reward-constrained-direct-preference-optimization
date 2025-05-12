@@ -59,10 +59,9 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
 
 
     def clean_text(example):
-        for key, val in example.items():
-            if isinstance(val, str):
-                # Remove invalid unicode surrogate characters
-                example[key] = val.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+        example['question'] = example['question'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+        for a in example['answer']:
+            a['text'] = a['text'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         return example
     dataset = dataset.map(clean_text, num_proc=64)
 
