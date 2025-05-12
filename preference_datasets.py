@@ -64,17 +64,25 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
 
     def clean_text(example):
         example['question'] = SURROGATE_RE.sub('', example['question'])
+        example['question'] = example['question'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         for a in example['answers']:
             a['text'] = SURROGATE_RE.sub('', a['text'])
+            a['text'] = a['text'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         return example
     
     dataset = dataset.map(clean_text, num_proc=64)
 
     def strip_html(x):
-        x['question'] = strip_html_tags(x['question'])
-        for a in x['answers']:
-            a['text'] = strip_html_tags(a['text'])
-        return x
+        try:
+            x['question'] = strip_html_tags(x['question'])
+            for a in x['answers']:
+                a['text'] = strip_html_tags(a['text'])
+            return x
+        except Exception as e:
+            print("Error while processing this row:")
+            print(x)
+            print(f"Exception: {e}")
+            raise e
 
     dataset = dataset.map(strip_html, num_proc=64)
 
