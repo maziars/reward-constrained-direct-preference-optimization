@@ -72,6 +72,21 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
 
 
     dataset = dataset.select(range(10000))
+
+    def is_valid_example(example):
+        if not example.get('question') or not example['question'].strip():
+            return False
+        if 'answers' not in example or not example['answers']:
+            return False
+        for a in example['answers']:
+            if not a.get('text') or not a['text'].strip():
+                return False
+        return True
+
+    print("Filtering invalid examples...")
+    dataset = dataset.filter(is_valid_example)
+    print(f"Dataset size after filtering: {len(dataset)}")
+    
     dataset = dataset.map(clean_text, num_proc=64)
 
     def strip_html(x):
