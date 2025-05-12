@@ -60,7 +60,7 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
 
     def clean_text(example):
         example['question'] = example['question'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
-        for a in example['answer']:
+        for a in example['answers']:
             a['text'] = a['text'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         return example
     dataset = dataset.map(clean_text, num_proc=64)
