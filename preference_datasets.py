@@ -65,6 +65,14 @@ def get_se(split, silent=False, cache_dir: str = None) -> Dict[str, Dict[str, Un
 
     dataset = dataset.map(strip_html, num_proc=64)
 
+    def clean_text(example):
+        for key, val in example.items():
+            if isinstance(val, str):
+                # Remove invalid unicode surrogate characters
+                example[key] = val.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+        return example
+    dataset = dataset.map(clean_text, num_proc=64)
+
     data = defaultdict(dict)
     for row in tqdm.tqdm(dataset, desc='Processing SE', disable=silent):
         prompt = '\n\nHuman: ' + row['question'] + '\n\nAssistant:'
