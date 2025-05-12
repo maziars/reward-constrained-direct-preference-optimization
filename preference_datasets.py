@@ -76,7 +76,22 @@ def get_se(split, silent=False, cache_dir: str = None) -> Dict[str, Dict[str, Un
             for j in range(i + 1, len(responses)):
                 pairs.append((i, j) if scores[i] > scores[j] else (j, i))
 
+        # Find last occurrence of max
+        max_score = max(scores)
+        max_idx = len(scores) - 1 - scores[::-1].index(max_score)
+        
+        # Find first occurrence of min
+        min_score = min(scores)
+        min_idx = scores.index(min_score)
+        
+        best_pair = [(max_idx, min_idx)]
+        
+
+        
+
         data[prompt]['responses'] = responses
+        data[prompt]['scores'] = scores
+        data[prompt]['best_pair'] = best_pair
         data[prompt]['pairs'] = pairs
         data[prompt]['sft_target'] = max(responses, key=lambda x: scores[responses.index(x)])
 
