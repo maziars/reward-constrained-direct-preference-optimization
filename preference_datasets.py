@@ -69,7 +69,9 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
             a['text'] = SURROGATE_RE.sub('', a['text'])
             a['text'] = a['text'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         return example
-    
+
+
+    dataset = dataset.select(range(10000))
     dataset = dataset.map(clean_text, num_proc=64)
 
     def strip_html(x):
@@ -83,7 +85,7 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
             print(x)
             print(f"Exception: {e}")
             raise e
-
+    
     dataset = dataset.map(strip_html, num_proc=64)
 
     
