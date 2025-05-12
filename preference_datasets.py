@@ -9,6 +9,10 @@ import random
 from bs4 import BeautifulSoup, NavigableString
 import numpy as np
 from typing import Dict, List, Optional, Iterator, Callable, Union, Tuple
+import re
+
+# Matches UTF-16 surrogate codepoints (invalid in UTF-8)
+SURROGATE_RE = re.compile(r'[\uD800-\uDFFF]')
 
 
 def extract_anthropic_prompt(prompt_and_response):
@@ -59,10 +63,11 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
 
 
     def clean_text(example):
-        example['question'] = example['question'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+        example['question'] = SURROGATE_RE.sub('', example['question'])
         for a in example['answers']:
-            a['text'] = a['text'].encode('utf-8', 'ignore').decode('utf-8', 'ignore')
+            a['text'] = SURROGATE_RE.sub('', a['text'])
         return example
+    
     dataset = dataset.map(clean_text, num_proc=64)
 
     def strip_html(x):
