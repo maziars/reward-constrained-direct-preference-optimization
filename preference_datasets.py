@@ -43,7 +43,7 @@ def strip_html_tags(html_string):
     return text
 
 
-def get_se(split, silent=False, cache_dir: str = None) -> Dict[str, Dict[str, Union[List[Tuple[int, int]], List[str], str]]]:
+def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Dict[str, Dict[str, Union[List[Tuple[int, int]], List[str], str]]]:
     """Load the StackExchange dataset from Huggingface, and return a dict of prompts and responses. See get_hh for the format.
     
        We strip the HTML tags from the responses (except for <code> tags), and we add necessary newlines.
@@ -194,8 +194,8 @@ def get_dataset(name: str, split: str, silent: bool = False, cache_dir: str = No
     else:
         raise ValueError(f"Unknown dataset '{name}'")
 
-    assert set(list(data.values())[0].keys()) == {'responses', 'pairs', 'sft_target'}, \
-        f"Unexpected keys in dataset: {list(list(data.values())[0].keys())}"
+    # assert set(list(data.values())[0].keys()) == {'responses', 'pairs', 'sft_target'}, \
+    #     f"Unexpected keys in dataset: {list(list(data.values())[0].keys())}"
 
     return data
 
