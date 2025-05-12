@@ -57,13 +57,6 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
     dataset = dataset.select(range(int(len(dataset) * 0.01))) if split == 'test' else dataset.select(
         range(int(len(dataset) * 0.01), len(dataset)))
 
-    def strip_html(x):
-        x['question'] = strip_html_tags(x['question'])
-        for a in x['answers']:
-            a['text'] = strip_html_tags(a['text'])
-        return x
-
-    dataset = dataset.map(strip_html, num_proc=64)
 
     def clean_text(example):
         for key, val in example.items():
@@ -72,6 +65,16 @@ def get_se(split, silent=False, cache_dir: str = '/home/ubuntu/DPO/Data/') -> Di
                 example[key] = val.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
         return example
     dataset = dataset.map(clean_text, num_proc=64)
+
+    def strip_html(x):
+        x['question'] = strip_html_tags(x['question'])
+        for a in x['answers']:
+            a['text'] = strip_html_tags(a['text'])
+        return x
+
+    dataset = dataset.map(strip_html, num_proc=64)
+
+    
 
     data = defaultdict(dict)
     for row in tqdm.tqdm(dataset, desc='Processing SE', disable=silent):
